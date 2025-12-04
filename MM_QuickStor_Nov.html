@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>QuickStor Monthly Review - Presentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Poppins:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark background for presentation mode */
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Presentation Window */
+        #presentation-stage {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Slide Logic */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease-in-out;
+            z-index: 0;
+            background: white;
+            /* Flex layout to match original slide-container behavior */
+            display: flex;
+            flex-direction: column; 
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Navigation Controls */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            opacity: 0; /* Hidden by default, shown on hover of stage */
+            transition: opacity 0.3s;
+        }
+
+        #presentation-stage:hover .controls {
+            opacity: 1;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #eff6ff;
+            color: #2563eb;
+            border-color: #bfdbfe;
+        }
+
+        .slide-counter {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        /* --- Shared Styles from Original Files --- */
+        .font-poppins { font-family: 'Poppins', sans-serif; }
+        
+        /* Background Decorations */
+        .bg-shape-top {
+            position: absolute;
+            top: 0; right: 0; width: 600px; height: 200px;
+            background-color: #eff6ff; border-bottom-left-radius: 100%; z-index: 0;
+        }
+        .bg-shape-bottom {
+            position: absolute;
+            bottom: 0; left: 0; width: 300px; height: 150px;
+            background-color: #f8fafc; border-top-right-radius: 100%; z-index: 0;
+        }
+        .header-bar {
+            position: absolute; top: 40px; left: 0; width: 8px; height: 64px; background-color: #2563eb;
+        }
+
+        /* Specific styles merged from all files */
+        .tech-shape {
+            position: absolute; background-color: #eff6ff; width: 45%; height: 100%; right: 0; top: 0;
+            clip-path: polygon(20% 0%, 100% 0, 100% 100%, 0% 100%); z-index: 0;
+        }
+        .tech-accent-bar {
+            position: absolute; background-color: #2563eb; width: 12px; height: 100%; left: 0; top: 0; z-index: 10;
+        }
+        
+        .mission-card { transition: all 0.3s ease; background: white; border: 1px solid #f3f4f6; }
+        .mission-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #bfdbfe; }
+        .icon-container { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px; margin-bottom: 1.5rem; }
+        
+        .feature-card { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.2s; border: 1px solid #e5e7eb; }
+        .feature-icon-wrapper { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+        
+        .section-card { background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; }
+        .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .custom-table th { background-color: #f9fafb; padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: #6b7280; font-weight: 600; }
+        .custom-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #f3f4f6; font-size: 0.875rem; color: #374151; }
+        .badge { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .badge-green { background-color: #def7ec; color: #03543f; }
+        
+        .focus-item { display: flex; align-items: flex-start; padding: 1rem; background: rgba(255,255,255,0.8); border-radius: 0.75rem; border: 1px solid #e5e7eb; margin-bottom: 1rem; transition: transform 0.2s; }
+        .focus-item:hover { transform: translateX(5px); border-color: #93c5fd; }
+        .timeline-line { position: absolute; left: 50%; top: 10%; bottom: 10%; width: 2px; background: #e5e7eb; transform: translateX(-50%); z-index: 0; }
+        
+        .cert-card { transition: all 0.3s ease; border: 1px solid #e5e7eb; }
+        .cert-card:hover { transform: translateX(8px); border-color: #bfdbfe; }
+        .icon-badge { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 24px; }
+        
+        .ask-card { transition: all 0.3s ease; border: 1px solid #e5e7eb; }
+        .ask-card:hover { transform: translateX(8px); border-color: #bfdbfe; }
+        
+        /* Utility overrides for slide layout */
+        .slide-content-wrapper { flex: 1; position: relative; z-index: 10; }
+    </style>
+</head>
+<body>
+
+    <div id="presentation-stage">
+        
+        <!-- Controls -->
+        <div class="controls">
+            <button class="nav-btn" onclick="prevSlide()" title="Previous (Left Arrow)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="slide-counter">
+                <span id="current-slide">1</span> / <span id="total-slides">8</span>
+            </div>
+            <button class="nav-btn" onclick="nextSlide()" title="Next (Right Arrow)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- SLIDE 1: Cover (Page 1) -->
+        <div class="slide active">
+            <div class="tech-accent-bar"></div>
+            <div class="tech-shape"></div>
+            <div class="flex w-full h-full z-10 pl-16 pr-8 py-12">
+                <div class="flex-1 flex flex-col justify-center pr-8">
+                    <div class="mb-8">
+                        <p class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-md text-sm font-bold tracking-wider uppercase border border-blue-200">
+                            <i class="fas fa-project-diagram mr-2"></i>Monthly Progress Report
+                        </p>
+                    </div>
+                    <div class="mb-6">
+                        <p class="text-6xl font-poppins font-extrabold text-gray-900 leading-tight">
+                            QuickStor<br/><span class="text-blue-700">Monthly Review</span>
+                        </p>
+                    </div>
+                    <div class="mb-10">
+                        <p class="text-3xl text-gray-400 font-poppins font-medium mb-2">November 2025</p>
+                        <div class="w-24 h-1 bg-blue-500 mb-6"></div>
+                        <p class="text-xl text-gray-600 leading-relaxed max-w-xl border-l-4 border-gray-200 pl-6">
+                            November Development Focus:<br/><strong class="text-gray-800">Performance and Network Flexibility</strong>
+                        </p>
+                    </div>
+                    <div class="mt-auto">
+                        <div class="flex items-center">
+                            <div class="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-lg mr-4">
+                                <i class="fas fa-user-tie text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-widest font-semibold mb-1">Presented by</p>
+                                <p class="text-2xl font-bold text-gray-800 font-poppins">M Abdel Nasser</p>
+                                <p class="text-sm text-blue-600 font-medium">Lead Developer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-5/12 flex flex-col justify-center items-center relative">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute -top-10 -right-10 text-blue-200"><i class="fas fa-braille text-9xl opacity-50"></i></div>
+                        <div class="bg-white p-8 rounded-2xl shadow-2xl relative z-10 border border-gray-100">
+                            <img alt="Server Storage Infrastructure" class="w-full h-auto object-contain" src="https://page.gensparksite.com/slides_images/551b9bac8801ef9df5e5e9896746b215.webp" style="max-height: 400px;"/>
+                        </div>
+                        <div class="absolute -bottom-6 -left-6 bg-blue-800 text-white p-4 rounded-lg shadow-lg z-20 max-w-xs">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-green-400 mt-1 mr-3"></i>
+                                <div><p class="font-bold text-sm">MVP Status</p><p class="text-xs text-blue-200 mt-1">Approaching functional readiness</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Mission (New Slide) -->
+        <div class="slide">
+            <div class="bg-shape-top"></div>
+            <div class="bg-shape-bottom"></div>
+            <div class="header-bar"></div>
+            <div class="w-full px-16 pt-10 pb-6 z-10">
+                <div class="flex items-end justify-between border-b border-gray-200 pb-4">
+                    <div>
+                        <p class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-1">Strategic Goals</p>
+                        <h1 class="text-4xl font-poppins font-bold text-gray-900 leading-tight">November's Mission: <span class="text-gray-500 text-3xl block mt-1">Delivering Key Capabilities for MVP Readiness</span></h1>
+                    </div>
+                    <div class="flex items-center space-x-2 text-gray-500"><i class="fas fa-bullseye"></i><span class="text-sm font-medium">Mission Status</span></div>
+                </div>
+            </div>
+            <div class="flex-1 px-16 py-8 z-10 flex gap-8 items-stretch justify-center">
+                <!-- Col 1 -->
+                <div class="w-1/3">
+                    <div class="mission-card h-full rounded-2xl p-8 flex flex-col items-center text-center shadow-sm border border-blue-50 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-blue-500"></div>
+                        <div class="icon-container bg-blue-50 text-blue-600"><i class="fas fa-layer-group text-4xl"></i></div>
+                        <h3 class="text-xl font-bold text-gray-800 font-poppins mb-4">1. Expanding Core Capabilities</h3>
+                        <p class="text-gray-600 leading-relaxed">Shipped two mission-critical features end-to-end, enhancing storage performance and network agility.</p>
+                        <div class="absolute -bottom-6 -right-6 text-9xl font-bold text-gray-50 opacity-50 z-0">1</div>
+                    </div>
+                </div>
+                <!-- Col 2 -->
+                <div class="w-1/3">
+                    <div class="mission-card h-full rounded-2xl p-8 flex flex-col items-center text-center shadow-sm border border-indigo-50 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-indigo-500"></div>
+                        <div class="icon-container bg-indigo-50 text-indigo-600"><i class="fas fa-shield-alt text-4xl"></i></div>
+                        <h3 class="text-xl font-bold text-gray-800 font-poppins mb-4">2. Fortifying the Platform</h3>
+                        <p class="text-gray-600 leading-relaxed">Focused on cluster stability, IP management, and rigorous testing to ensure system reliability.</p>
+                        <div class="absolute -bottom-6 -right-6 text-9xl font-bold text-gray-50 opacity-50 z-0">2</div>
+                    </div>
+                </div>
+                <!-- Col 3 -->
+                <div class="w-1/3">
+                    <div class="mission-card h-full rounded-2xl p-8 flex flex-col items-center text-center shadow-sm border border-purple-50 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-purple-500"></div>
+                        <div class="icon-container bg-purple-50 text-purple-600"><i class="fas fa-brain text-4xl"></i></div>
+                        <h3 class="text-xl font-bold text-gray-800 font-poppins mb-4">3. Architecting Future Intelligence</h3>
+                        <p class="text-gray-600 leading-relaxed">Started laying the groundwork for ML-powered storage prediction with foundational research and initial development.</p>
+                        <div class="absolute -bottom-6 -right-6 text-9xl font-bold text-gray-50 opacity-50 z-0">3</div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-16 pb-6 z-10 flex justify-between items-center text-gray-400 text-xs"><p>QuickStor Monthly Review</p><p>Confidential - Internal Use Only</p></div>
+        </div>
+
+        <!-- SLIDE 3: Core Feature Delivery (Page 2) -->
+        <div class="slide">
+            <div class="bg-shape-top"></div>
+            <div class="bg-shape-bottom"></div>
+            <div class="header-bar"></div>
+            <div class="w-full px-16 pt-10 pb-6 z-10">
+                <div class="flex items-end justify-between border-b border-gray-200 pb-4">
+                    <div>
+                        <p class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-1">November Major Work</p>
+                        <h1 class="text-4xl font-poppins font-bold text-gray-900">1. Core Feature Delivery</h1>
+                    </div>
+                    <div class="flex items-center space-x-2 text-gray-500"><i class="fas fa-calendar-check"></i><span class="text-sm font-medium">Nov 2025</span></div>
+                </div>
+            </div>
+            <div class="flex-1 px-16 py-4 z-10 flex gap-8">
+                <!-- Col 1 -->
+                <div class="flex-1 flex flex-col">
+                    <div class="feature-card bg-white h-full rounded-xl p-8 flex flex-col relative overflow-hidden">
+                        <div class="flex items-center mb-6">
+                            <div class="feature-icon-wrapper w-14 h-14 rounded-lg flex items-center justify-center mr-5"><i class="fas fa-hdd text-2xl"></i></div>
+                            <div><p class="text-sm text-gray-500 font-semibold uppercase tracking-wide">Storage Performance</p><h2 class="text-2xl font-poppins font-bold text-gray-800">Read Cache</h2></div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="mb-6">
+                                <p class="text-sm font-bold text-gray-400 mb-2 uppercase">Assignment</p>
+                                <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
+                                    <p class="text-gray-700 leading-relaxed">Implement the possibility to use <span class="font-bold text-gray-900">read cache disks on two nodes</span> within the disk group configuration.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-auto pt-6 border-t border-gray-100 flex items-center justify-between">
+                            <div class="flex items-center"><div class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold flex items-center"><i class="fas fa-check mr-2 text-xs"></i> Done</div></div>
+                            <div class="text-right"><p class="text-xs text-gray-400 font-medium uppercase">Effort</p><p class="text-lg font-bold text-gray-700">56 <span class="text-sm font-normal text-gray-500">Hours</span></p></div>
+                        </div>
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-12 -mt-12 opacity-50"></div>
+                    </div>
+                </div>
+                <!-- Col 2 -->
+                <div class="flex-1 flex flex-col">
+                    <div class="feature-card bg-white h-full rounded-xl p-8 flex flex-col relative overflow-hidden">
+                        <div class="flex items-center mb-6">
+                            <div class="feature-icon-wrapper w-14 h-14 rounded-lg flex items-center justify-center mr-5 bg-indigo-50 text-indigo-600"><i class="fas fa-network-wired text-2xl"></i></div>
+                            <div><p class="text-sm text-gray-500 font-semibold uppercase tracking-wide">Network Flexibility</p><h2 class="text-2xl font-poppins font-bold text-gray-800">Advanced Bonding</h2></div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="mb-5">
+                                <p class="text-sm font-bold text-gray-400 mb-2 uppercase">Problem &amp; Fix</p>
+                                <div class="mb-4">
+                                    <p class="text-gray-700 mb-2 text-sm"><i class="fas fa-exclamation-circle text-red-400 mr-2"></i>Corrected issue where selecting a port disabled it for other traffic types.</p>
+                                    <p class="text-gray-800 bg-indigo-50 p-3 rounded-md border border-indigo-100"><i class="fas fa-check-circle text-indigo-500 mr-2"></i>Fix allows ports to be used for <span class="font-bold">all traffic types</span> and enables bonding.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-400 mb-2 uppercase">Visibility</p>
+                                <p class="text-gray-600 text-sm flex items-start"><i class="fas fa-eye text-gray-400 mt-1 mr-2"></i>Implemented feature to show resulting bonds in UI.</p>
+                            </div>
+                        </div>
+                        <div class="mt-auto pt-6 border-t border-gray-100 flex items-center justify-between">
+                            <div class="flex items-center"><div class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold flex items-center"><i class="fas fa-check mr-2 text-xs"></i> Done</div></div>
+                            <div class="text-right"><p class="text-xs text-gray-400 font-medium uppercase">Effort</p><p class="text-lg font-bold text-gray-700">72 <span class="text-sm font-normal text-gray-500">Hours</span></p></div>
+                        </div>
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -mr-12 -mt-12 opacity-50"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-16 pb-8 pt-4 z-10 flex justify-between items-center text-gray-400 text-xs"><p>QuickStor Monthly Review</p><p>Confidential - Internal Use Only</p></div>
+        </div>
+
+        <!-- SLIDE 4: Stabilization (Page 3) -->
+        <div class="slide">
+            <div class="bg-shape-top"></div>
+            <div class="bg-shape-bottom"></div>
+            <div class="header-bar"></div>
+            <div class="w-full px-16 pt-10 pb-4 z-10">
+                <div class="flex items-end justify-between border-b border-gray-200 pb-4">
+                    <div>
+                        <p class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-1">Stabilization &amp; Prediction</p>
+                        <h1 class="text-4xl font-poppins font-bold text-gray-900">1. Stabilization and Prediction</h1>
+                    </div>
+                    <div class="flex items-center space-x-2 text-gray-500"><i class="fas fa-calendar-check"></i><span class="text-sm font-medium">Nov 2025</span></div>
+                </div>
+            </div>
+            <div class="flex-1 px-16 py-4 z-10 flex flex-col gap-5 overflow-hidden">
+                <div class="flex gap-6 h-56">
+                    <!-- Card 1 -->
+                    <div class="section-card flex-1 p-5 relative flex flex-col">
+                        <div class="flex items-center mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3 bg-blue-100 text-blue-600"><i class="fas fa-server"></i></div><h3 class="text-lg font-bold text-gray-800 font-poppins">System Readiness</h3></div>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3">IP Management &amp; Cluster Join</p>
+                        <div class="flex-1 space-y-3">
+                            <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-3 text-sm"></i><div><p class="text-gray-800 text-sm font-semibold">Core IP Change Mechanisms</p><p class="text-xs text-gray-500">Completed: 12 actual hours / 16 planned</p></div></div>
+                            <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-3 text-sm"></i><div><p class="text-gray-800 text-sm font-semibold">Cluster Join Demonstration</p><p class="text-xs text-gray-500">Successful join of 2nd node after alias/IP change</p></div></div>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="section-card flex-1 p-5 relative flex flex-col">
+                        <div class="flex items-center mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3 bg-indigo-100 text-indigo-600"><i class="fas fa-brain"></i></div><h3 class="text-lg font-bold text-gray-800 font-poppins">ML Model Implementation</h3></div>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3">ZFS Pool Size Prediction</p>
+                        <div class="flex-1 space-y-3">
+                            <div class="flex items-start"><i class="fas fa-search text-indigo-400 mt-1 mr-3 text-sm"></i><div><p class="text-gray-800 text-sm font-semibold">Research Completed</p><p class="text-xs text-gray-500 leading-tight">Identified tools (WintelGuy, jro.io) with ±2–4% accuracy.</p></div></div>
+                            <div class="flex items-start"><i class="fas fa-code text-indigo-400 mt-1 mr-3 text-sm"></i><div><p class="text-gray-800 text-sm font-semibold">Development In Progress</p><p class="text-xs text-gray-500 leading-tight">Creating estimation table/ML model (5 actual hours).</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Table -->
+                <div class="section-card flex-1 flex flex-col min-h-0">
+                    <div class="px-6 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+                        <div class="flex items-center"><i class="fas fa-bug text-red-400 mr-3"></i><h3 class="text-sm font-bold text-gray-700 font-poppins uppercase tracking-wide">Bug Fixes and Testing</h3></div>
+                        <span class="text-xs text-gray-500 bg-white px-2 py-1 border rounded font-medium">QSD4.12 Cycle</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto">
+                        <table class="custom-table">
+                            <thead><tr><th width="15%">Type</th><th width="70%">Assignment Description</th><th width="15%">Status</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded border border-red-100">Bug Fix</span></td><td>Resolved the problem of <strong>Ahmad's node joining the cluster</strong> in QSD4.12.</td><td><span class="badge badge-green">Done</span></td></tr>
+                                <tr><td><span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded border border-red-100">Bug Fix</span></td><td>Fixed issue where <strong>ethernet ports were not listed</strong> on the new node.</td><td><span class="badge badge-green">Done</span></td></tr>
+                                <tr><td><span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded border border-red-100">Bug Fix</span></td><td>Adjusted the range of <strong>random IPs</strong> in docker_setup.</td><td><span class="badge badge-green">Done</span></td></tr>
+                                <tr><td><span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100">Testing</span></td><td>Amended Diskgroup test tab: add/remove <strong>cache disks</strong> while copying data.</td><td><span class="badge badge-green">Done</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="px-16 pb-6 z-10 flex justify-between items-center text-gray-400 text-xs"><p>QuickStor Monthly Review</p><p>Confidential - Internal Use Only</p></div>
+        </div>
+
+        <!-- SLIDE 5: Current Focus (New Slide / Page 4) -->
+        <div class="slide">
+            <div class="bg-shape-top"></div>
+            <div class="bg-shape-bottom"></div>
+            <div class="header-bar"></div>
+            <div class="w-full px-16 pt-10 pb-6 z-10">
+                <div class="flex items-end justify-between border-b border-gray-200 pb-4">
+                    <div>
+                        <p class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-1">Roadmap Update</p>
+                        <h1 class="text-4xl font-poppins font-bold text-gray-900">Current Focus & Next Steps</h1>
+                    </div>
+                    <div class="flex items-center space-x-2 text-gray-500"><i class="fas fa-tasks"></i><span class="text-sm font-medium">Nov/Dec Transition</span></div>
+                </div>
+            </div>
+            <div class="flex-1 px-16 py-8 z-10 relative">
+                <div class="timeline-line hidden md:block"></div>
+                <div class="flex h-full gap-16">
+                    <!-- Left -->
+                    <div class="w-1/2 flex flex-col z-10">
+                        <div class="flex items-center mb-8">
+                            <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mr-4 text-xl shadow-sm"><i class="fas fa-sync-alt fa-spin"></i></div>
+                            <div><h2 class="text-2xl font-bold text-gray-800 font-poppins">In Progress</h2><p class="text-sm text-blue-500 font-medium uppercase tracking-wide">Current Sprint Focus</p></div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="focus-item bg-white shadow-sm border-l-4 border-l-blue-500">
+                                <div class="mr-4 mt-1 text-blue-500"><i class="fas fa-chart-line"></i></div>
+                                <div><h3 class="font-bold text-gray-800 text-lg">ZFS Pool Size Estimator</h3><p class="text-gray-600 text-sm mt-1">Continuing development of the ML/table-based feature to ensure accurate storage predictions.</p></div>
+                            </div>
+                            <div class="focus-item bg-white shadow-sm border-l-4 border-l-blue-500">
+                                <div class="mr-4 mt-1 text-blue-500"><i class="fas fa-network-wired"></i></div>
+                                <div><h3 class="font-bold text-gray-800 text-lg">Port Bonding Functionality</h3><p class="text-gray-600 text-sm mt-1">Finalizing validation and testing on recent networking updates.</p></div>
+                            </div>
+                            <div class="focus-item bg-white shadow-sm border-l-4 border-l-blue-500">
+                                <div class="mr-4 mt-1 text-blue-500"><i class="fas fa-pencil-ruler"></i></div>
+                                <div><h3 class="font-bold text-gray-800 text-lg">QuickStor Landing Page</h3><p class="text-gray-600 text-sm mt-1">Designing and implementing the initial website structure.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right -->
+                    <div class="w-1/2 flex flex-col z-10">
+                        <div class="flex items-center mb-8 pl-4">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 text-xl shadow-sm"><i class="far fa-calendar-alt"></i></div>
+                            <div><h2 class="text-2xl font-bold text-gray-800 font-poppins">December Outlook</h2><p class="text-sm text-indigo-500 font-medium uppercase tracking-wide">Upcoming Priorities</p></div>
+                        </div>
+                        <div class="bg-gradient-to-br from-white to-indigo-50 rounded-2xl p-8 border border-indigo-100 shadow-sm relative overflow-hidden h-full">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-100 rounded-bl-full opacity-50 -mr-8 -mt-8"></div>
+                            <div class="absolute bottom-0 right-10 text-9xl text-indigo-100 opacity-40"><i class="fas fa-rocket"></i></div>
+                            <ul class="space-y-6 relative z-10">
+                                <li class="flex items-start">
+                                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 font-bold text-sm">1</span>
+                                    <div><h4 class="font-bold text-gray-800">IOPs & Latency Research</h4><p class="text-sm text-gray-600 mt-1">Initiate research into estimation models for disk groups.</p></div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 font-bold text-sm">2</span>
+                                    <div><h4 class="font-bold text-gray-800">Performance Containers</h4><p class="text-sm text-gray-600 mt-1">Scope work for integration with new cluster nodes.</p></div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 font-bold text-sm">3</span>
+                                    <div><h4 class="font-bold text-gray-800">Web Presence Launch</h4><p class="text-sm text-gray-600 mt-1">Finalize design and deployment strategy for QuickStor.com.</p></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-16 pb-6 z-10 flex justify-between items-center text-gray-400 text-xs"><p>QuickStor Monthly Review</p><p>Confidential - Internal Use Only</p></div>
+        </div>
+
+        <!-- SLIDE 6: Key Takeaways (Page 5) -->
+        <div class="slide">
+            <div class="bg-shape-top"></div>
+            <div class="bg-shape-bottom"></div>
+            <div class="header-bar"></div>
+            <div class="w-full px-16 pt-10 pb-4 z-10">
+                <div class="flex items-end justify-between border-b border-gray-200 pb-4">
+                    <div>
+                        <p class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-1">Executive Summary</p>
+                        <h1 class="text-4xl font-poppins font-bold text-gray-900">2. Key Takeaways</h1>
+                    </div>
+                    <div class="flex items-center space-x-2 text-gray-500"><i class="fas fa-calendar-check"></i><span class="text-sm font-medium">Nov 2025</span></div>
+                </div>
+            </div>
+            <div class="flex-1 flex flex-col items-center justify-center z-10 px-20 relative">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-50 z-0 pointer-events-none"><i class="fas fa-bullseye text-[400px] opacity-40"></i></div>
+                <div class="text-center mb-10 z-10">
+                    <div class="inline-flex items-center justify-center bg-blue-100 text-blue-700 px-6 py-2 rounded-full mb-6 shadow-sm">
+                        <i class="fas fa-trophy mr-2 text-lg"></i><p class="font-bold uppercase tracking-wide text-sm">November Major Achievement</p>
+                    </div>
+                    <p class="text-6xl font-poppins font-extrabold text-gray-900 tracking-tight">Functional Readiness</p>
+                </div>
+                <div class="w-full max-w-5xl relative z-10">
+                    <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden relative">
+                        <div class="absolute left-0 top-0 bottom-0 w-3 bg-blue-600"></div>
+                        <div class="p-12 md:p-16 relative">
+                            <div class="absolute top-8 left-10 text-blue-100 z-0"><i class="fas fa-quote-left text-8xl"></i></div>
+                            <div class="relative z-10 text-center"><p class="text-4xl md:text-5xl font-medium text-gray-800 leading-tight font-poppins italic">"We are now so close to having a functional and reliable MVP."</p></div>
+                            <div class="flex justify-center my-8"><div class="w-24 h-1 bg-blue-200 rounded-full"></div></div>
+                            <div class="text-center"><p class="text-gray-500 font-medium uppercase tracking-widest text-sm">    Project Status</p></div>
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-32 h-32 bg-blue-50 rounded-tl-full opacity-50 -mr-10 -mb-10"></div>
+                    </div>
+                </div>
+                <div class="mt-12 grid grid-cols-3 gap-8 w-full max-w-3xl z-10">
+                    <div class="bg-white bg-opacity-80 backdrop-blur-sm p-4 rounded-lg border border-gray-200 shadow-sm flex items-center justify-center"><i class="fas fa-network-wired text-green-500 mr-3 text-xl"></i><p class="text-gray-700 font-semibold">Network Stable</p></div>
+                    <div class="bg-white bg-opacity-80 backdrop-blur-sm p-4 rounded-lg border border-gray-200 shadow-sm flex items-center justify-center"><i class="fas fa-hdd text-green-500 mr-3 text-xl"></i><p class="text-gray-700 font-semibold">Storage Optimized</p></div>
+                    <div class="bg-white bg-opacity-80 backdrop-blur-sm p-4 rounded-lg border border-gray-200 shadow-sm flex items-center justify-center"><i class="fas fa-flag-checkered text-blue-600 mr-3 text-xl"></i><p class="text-gray-900 font-bold">MVP Imminent</p></div>
+                </div>
+            </div>
+            <div class="px-16 pb-6 z-10 flex justify-between items-center text-gray-400 text-xs"><p>QuickStor Monthly Review</p><p>Confidential - Internal Use Only</p></div>
+        </div>
+
+        <!-- SLIDE 7: Personal Plan (Page 6) -->
+        <div class="slide">
+            <div class="bg-shape-top"></div>
+            <div class="bg-shape-bottom"></div>
+            <div class="header-bar"></div>
+            <div class="w-full px-16 pt-10 pb-6 z-10">
+                <div class="flex items-end justify-between border-b border-gray-200 pb-4">
+                    <div>
+                        <p class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-1">Future Focus</p>
+                        <h1 class="text-4xl font-poppins font-bold text-gray-900">3. Personal Plan</h1>
+                    </div>
+                    <div class="flex items-center space-x-2 text-gray-500"><i class="fas fa-calendar-alt"></i><span class="text-sm font-medium">Nov 2025 Review</span></div>
+                </div>
+            </div>
+            <div class="flex-1 px-16 py-4 z-10 flex gap-12 overflow-hidden">
+                <!-- Left -->
+                <div class="w-5/12 flex flex-col justify-center">
+                    <div class="bg-blue-50 rounded-2xl p-8 border border-blue-100 relative overflow-hidden h-full max-h-[480px]">
+                        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 rounded-full bg-blue-100 opacity-50"></div>
+                        <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 rounded-full bg-blue-100 opacity-50"></div>
+                        <div class="relative z-10 h-full flex flex-col">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6 font-poppins">Expanding Expertise</h2>
+                            <p class="text-gray-600 leading-relaxed mb-8">To enhance future contribution capabilities for the QuickStor ecosystem, the development roadmap focuses on two critical pillars:</p>
+                            <div class="space-y-6">
+                                <div class="flex items-start"><div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm mr-4 flex-shrink-0"><i class="fas fa-cloud"></i></div><div><h3 class="font-bold text-gray-800">Cloud Infrastructure</h3><p class="text-sm text-gray-500 mt-1">Advanced orchestration and IaC methodologies.</p></div></div>
+                                <div class="flex items-start"><div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-indigo-600 shadow-sm mr-4 flex-shrink-0"><i class="fas fa-robot"></i></div><div><h3 class="font-bold text-gray-800">AI Integration</h3><p class="text-sm text-gray-500 mt-1">Leveraging GenAI for smarter storage management.</p></div></div>
+                            </div>
+                            <div class="mt-auto pt-8"><div class="text-xs font-semibold text-blue-800 uppercase tracking-widest mb-2">Goal</div><p class="text-sm text-blue-900 font-medium italic">"Building a robust foundation for next-gen storage intelligence."</p></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right -->
+                <div class="w-7/12 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center"><i class="fas fa-certificate text-blue-500 mr-3"></i>Planned Certifications</h3>
+                    <div class="space-y-5">
+                        <div class="cert-card bg-white rounded-xl p-5 flex items-center shadow-sm">
+                            <div class="icon-badge bg-orange-50 text-orange-500 mr-6 border border-orange-100"><i class="fab fa-aws"></i></div>
+                            <div class="flex-1"><div class="flex justify-between items-start"><div><h4 class="text-lg font-bold text-gray-900">AWS GenAI Developer</h4><p class="text-sm text-gray-500 mt-1">Focus: Building and integrating Generative AI applications</p></div><span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-medium">Planned</span></div></div>
+                        </div>
+                        <div class="cert-card bg-white rounded-xl p-5 flex items-center shadow-sm">
+                            <div class="icon-badge bg-blue-50 text-blue-500 mr-6 border border-blue-100"><i class="fas fa-dharmachakra"></i></div>
+                            <div class="flex-1"><div class="flex justify-between items-start"><div><h4 class="text-lg font-bold text-gray-900">CKA Certification</h4><p class="text-sm text-gray-500 mt-1">Certified Kubernetes Administrator</p></div><span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-medium">Planned</span></div></div>
+                        </div>
+                        <div class="cert-card bg-white rounded-xl p-5 flex items-center shadow-sm">
+                            <div class="icon-badge bg-indigo-50 text-indigo-500 mr-6 border border-indigo-100"><i class="fas fa-code-branch"></i></div>
+                            <div class="flex-1"><div class="flex justify-between items-start"><div><h4 class="text-lg font-bold text-gray-900">Terraform 4</h4><p class="text-sm text-gray-500 mt-1">Infrastructure as Code (IaC) certification</p></div><span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-medium">Planned</span></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-16 pb-6 z-10 flex justify-between items-center text-gray-400 text-xs"><p>QuickStor Monthly Review</p><p>Confidential - Internal Use Only</p></div>
+        </div>
+
+        <!-- SLIDE 8: Challenges (Page 7) -->
+        <div class="slide">
+            <div class="bg-shape-top"></div>
+            <div class="bg-shape-bottom"></div>
+            <div class="header-bar"></div>
+            <div class="w-full px-16 pt-10 pb-6 z-10">
+                <div class="flex items-end justify-between border-b border-gray-200 pb-4">
+                    <div>
+                        <p class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-1">Resource Planning</p>
+                        <h1 class="text-4xl font-poppins font-bold text-gray-900">4. Challenges and Asks</h1>
+                    </div>
+                    <div class="flex items-center space-x-2 text-gray-500"><i class="fas fa-clipboard-check"></i><span class="text-sm font-medium">Nov 2025 Review</span></div>
+                </div>
+            </div>
+            <div class="flex-1 px-16 py-8 z-10 flex gap-12 overflow-hidden">
+                <!-- Left -->
+                <div class="w-1/2 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center"><i class="fas fa-exclamation-triangle text-blue-500 mr-3"></i>Technical Challenges</h3>
+                    <div class="bg-green-50 rounded-2xl p-10 border border-green-100 relative overflow-hidden h-full max-h-[400px] flex flex-col items-center justify-center text-center shadow-sm">
+                        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 rounded-full bg-green-100 opacity-50"></div>
+                        <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 rounded-full bg-green-100 opacity-50"></div>
+                        <div class="relative z-10">
+                            <div class="w-24 h-24 rounded-full bg-white flex items-center justify-center text-green-500 shadow-md mb-6 mx-auto"><i class="fas fa-check-circle text-5xl"></i></div>
+                            <h2 class="text-3xl font-bold text-gray-800 mb-4 font-poppins">All Clear</h2>
+                            <p class="text-gray-600 text-lg leading-relaxed max-w-md">Currently, there are <span class="font-semibold text-green-700">no outstanding technical challenges</span> blocking progress.</p>
+                            <div class="mt-8 inline-flex items-center px-4 py-2 bg-white rounded-full border border-green-200 text-green-700 text-sm font-semibold shadow-sm"><span class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>Status: On Track</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right -->
+                <div class="w-1/2 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center"><i class="fas fa-hand-holding-heart text-blue-500 mr-3"></i>Resource Requests</h3>
+                    <div class="space-y-6 h-full">
+                        <div class="ask-card bg-white rounded-xl p-8 flex flex-col shadow-sm h-full max-h-[400px] border border-blue-100 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
+                            <div class="relative z-10 flex-1 flex flex-col">
+                                <div class="flex items-start mb-6">
+                                    <div class="icon-badge bg-blue-50 text-blue-600 mr-6 border border-blue-100 flex-shrink-0"><i class="fas fa-laptop-code"></i></div>
+                                    <div><h4 class="text-2xl font-bold text-gray-900">Hardware Upgrade</h4><span class="inline-block mt-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wide">Priority: High</span></div>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-600 text-lg mb-6 leading-relaxed">To support upcoming ML model training and heavy virtualization workloads, an environment upgrade is requested.</p>
+                                    <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                                        <h5 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wider">Requirements</h5>
+                                        <ul class="space-y-3">
+                                            <li class="flex items-center text-gray-600"><i class="fas fa-memory text-blue-400 w-6"></i><span>Increased RAM for VM clusters</span></li>
+                                            <li class="flex items-center text-gray-600"><i class="fas fa-microchip text-blue-400 w-6"></i><span>Enhanced processor for ML tasks</span></li>
+                                            <li class="flex items-center text-gray-600"><i class="fas fa-hdd text-blue-400 w-6"></i><span>Fast NVMe storage for ZFS testing</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-16 pb-6 z-10 flex justify-between items-center text-gray-400 text-xs"><p>QuickStor Monthly Review</p><p>Confidential - Internal Use Only</p></div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const counterCurrent = document.getElementById('current-slide');
+        const counterTotal = document.getElementById('total-slides');
+
+        // Initialize
+        counterTotal.innerText = totalSlides;
+        updateSlideVisibility();
+
+        function updateSlideVisibility() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            counterCurrent.innerText = currentSlideIndex + 1;
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides - 1) {
+                currentSlideIndex++;
+                updateSlideVisibility();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlideVisibility();
+            }
+        }
+
+        // Keyboard Support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>
